@@ -1,0 +1,52 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push hooks..."
+
+# Check if we're in the js directory or need to cd into it
+if [ -f "package.json" ]; then
+  JS_DIR="."
+else
+  JS_DIR="js"
+fi
+
+# JavaScript/TypeScript comprehensive checks
+echo "📝 Running comprehensive JavaScript/TypeScript checks..."
+cd "$JS_DIR" || exit 1
+
+echo "🔍 Running full Biome check..."
+npm run biome:ci
+
+echo "🔍 Running TypeScript type check..."
+npm run typecheck
+
+echo "🧪 Running full test suite with coverage..."
+npm run test:ci
+
+cd - > /dev/null || exit 1
+
+# Go comprehensive checks (if Go files are present)
+if [ -f "go.mod" ]; then
+  echo "🐹 Running comprehensive Go checks..."
+  
+  echo "🔍 Running go vet..."
+  go vet ./...
+  
+  echo "🔍 Running go mod tidy..."
+  go mod tidy
+  
+  echo "🧪 Running Go tests with race detection..."
+  go test -race ./...
+  
+  echo "🔍 Checking for Go vulnerabilities..."
+  if command -v govulncheck > /dev/null 2>&1; then
+    govulncheck ./...
+  else
+    echo "ℹ️  govulncheck not installed, skipping vulnerability check"
+    echo "ℹ️  Install with: go install golang.org/x/vuln/cmd/govulncheck@latest"
+  fi
+else
+  echo "ℹ️  No Go module found, skipping Go checks"
+fi
+
+echo "✅ All pre-push checks passed!" 
