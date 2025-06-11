@@ -1,9 +1,9 @@
 import React from 'react'
-import { Text, TextInput, View } from 'react-native'
+import {Text, TextInput, View} from 'react-native'
 
 export default function App() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 }}>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16}}>
       <Text>Hello World</Text>
       <Text>Welcome to nogodey</Text>
       <TextInput

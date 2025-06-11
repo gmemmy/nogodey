@@ -4,7 +4,25 @@
   "type": "module",
   "scripts": {
     "build": "tsx build.ts",
-    "plugin": "tsx plugin.ts --build"
+    "plugin": "tsx plugin.ts --build",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:unit": "vitest tests/unit",
+    "test:integration": "vitest tests/integration",
+    "typecheck": "tsc --noEmit",
+    "test:ci": "vitest run --coverage --reporter=verbose",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "biome:ci": "biome ci .",
+    "quality": "npm run typecheck && npm run check && npm run test:ci",
+    "fix": "npm run check:fix && npm run typecheck",
+    "precommit": "npm run quality"
   },
   "dependencies": {
     "@babel/generator": "^7.27.5",
@@ -17,6 +35,8 @@
   },
   "devDependencies": {
     "@babel/types": "^7.27.6",
+    "@biomejs/biome": "1.9.4",
+    "@testing-library/jest-dom": "^6.6.3",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.20.7",
     "@types/estree-jsx": "^1.0.5",
@@ -24,7 +44,11 @@
     "@types/react": "^19.1.7",
     "@types/react-native": "^0.72.8",
     "@types/slug": "^5.0.9",
+    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/ui": "^2.1.8",
+    "happy-dom": "^16.8.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.8"
   }
 }

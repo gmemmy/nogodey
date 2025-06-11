@@ -36,3 +36,8 @@ js/node_modules/
 # nogodey build outputs ----------------------------
 /js/bundle.js
 /js/bundle.js.map
+
+# Test outputs -------------------------------------
+js/coverage/
+js/tests/coverage/
+js/tests/reports/
