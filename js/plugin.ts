@@ -114,13 +114,16 @@ const plugin: Plugin = {
           return {code}
         }
 
-        logger.info({ 
-          filePath,
-          fileSize: code.length,
-        }, 'starting AST transformation')
+        logger.info(
+          {
+            filePath,
+            fileSize: code.length,
+          },
+          'starting AST transformation'
+        )
 
         if (!code) {
-          logger.warn({ filePath }, 'no code provided in transform args')
+          logger.warn({filePath}, 'no code provided in transform args')
           return {code}
         }
 
@@ -141,11 +144,14 @@ const plugin: Plugin = {
                 openingElement.name.type === 'JSXIdentifier' &&
                 openingElement.name.name.toLowerCase() === 'text'
               ) {
-                logger.info({ 
-                  filePath,
-                  elementType: 'Text',
-                  childrenCount: node.children?.length || 0,
-                }, 'found Text element')
+                logger.info(
+                  {
+                    filePath,
+                    elementType: 'Text',
+                    childrenCount: node.children?.length || 0,
+                  },
+                  'found Text element'
+                )
 
                 // Transform JSXText children
                 node.children = node.children.map(child => {
@@ -154,14 +160,17 @@ const plugin: Plugin = {
                     const key = buildKey(filePath, txt)
                     const loc = createLocation(child)
 
-                    logger.info({ 
-                      filePath,
-                      key,
-                      text: txt,
-                      line: loc.line,
-                      column: loc.column,
-                    }, 'recording text message')
-                    
+                    logger.info(
+                      {
+                        filePath,
+                        key,
+                        text: txt,
+                        line: loc.line,
+                        column: loc.column,
+                      },
+                      'recording text message'
+                    )
+
                     recordMessage(key, txt, filePath, loc)
                     transformCount++
 
@@ -193,15 +202,18 @@ const plugin: Plugin = {
                   const key = buildKey(filePath, txt)
                   const loc = createLocation(node)
 
-                  logger.info({ 
-                    filePath,
-                    attributeName: node.name.name,
-                    key,
-                    text: txt,
-                    line: loc.line,
-                    column: loc.column,
-                  }, 'recording attribute message')
-                  
+                  logger.info(
+                    {
+                      filePath,
+                      attributeName: node.name.name,
+                      key,
+                      text: txt,
+                      line: loc.line,
+                      column: loc.column,
+                    },
+                    'recording attribute message'
+                  )
+
                   recordMessage(key, txt, filePath, loc)
                   transformCount++
 
@@ -219,10 +231,13 @@ const plugin: Plugin = {
             },
           })
 
-          logger.info({ 
-            filePath,
-            transformCount,
-          }, 'AST traversal completed')
+          logger.info(
+            {
+              filePath,
+              transformCount,
+            },
+            'AST traversal completed'
+          )
 
           // Generate the transformed code
           const generateOptions: GeneratorOptions = {
@@ -233,23 +248,29 @@ const plugin: Plugin = {
           const result = generate(ast, generateOptions)
           transformTimer.observe()
 
-          logger.info({ 
-            filePath,
-            transformCount,
-            outputSize: result.code.length,
-          }, 'AST transformation completed')
+          logger.info(
+            {
+              filePath,
+              transformCount,
+              outputSize: result.code.length,
+            },
+            'AST transformation completed'
+          )
 
           return {code: result.code}
-        } catch (error) {
+        } catch (_error) {
           transformTimer.observe()
-          const errorMessage = error instanceof Error ? error.message : String(error)
-          
-          logger.error({ 
-            filePath,
-            errorMessage,
-            errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-          }, 'error during AST parsing/transformation')
-          
+          const errorMessage = _error instanceof Error ? _error.message : String(_error)
+
+          logger.error(
+            {
+              filePath,
+              errorMessage,
+              errorType: _error instanceof Error ? _error.constructor.name : 'Unknown',
+            },
+            'error during AST parsing/transformation'
+          )
+
           return {code}
         }
       }
@@ -259,21 +280,24 @@ const plugin: Plugin = {
     build.onEnd((): void => {
       const outputPath = 'dist/messages.json' as const
       const writeTimer = logger.startTimer('messages_write')
-      
+
       // Ensure output directory exists
       try {
-        mkdirSync(dirname(outputPath), { recursive: true })
-      } catch (error) {
+        mkdirSync(dirname(outputPath), {recursive: true})
+      } catch (_error) {
         // Directory might already exist, which is fine
       }
-      
+
       writeFileSync(outputPath, JSON.stringify(messages, null, 2))
       writeTimer.observe()
-      
-      logger.info({ 
-        messageCount: messages.length,
-        outputPath,
-      }, 'extracted messages written to file')
+
+      logger.info(
+        {
+          messageCount: messages.length,
+          outputPath,
+        },
+        'extracted messages written to file'
+      )
 
       // Clear messages for next build
       messages.length = 0
