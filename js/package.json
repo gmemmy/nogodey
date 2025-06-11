@@ -7,12 +7,18 @@
     "plugin": "tsx plugin.ts --build"
   },
   "dependencies": {
+    "@babel/generator": "^7.27.5",
+    "@babel/parser": "^7.27.5",
+    "@babel/traverse": "^7.27.4",
     "esbuild": "^0.25.0",
     "esbuild-extra": "^0.4.0",
     "estree-walker-ts": "^1.1.0",
     "slug": "^11.0.0"
   },
   "devDependencies": {
+    "@babel/types": "^7.27.6",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.20.7",
     "@types/estree-jsx": "^1.0.5",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.7",
