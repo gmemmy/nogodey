@@ -23,6 +23,8 @@ export default defineConfig({
       '@nogodey/plugin': './plugin.ts',
       '@nogodey/build': './build.ts',
       '@nogodey/types': './types.ts',
+      'intl-messageformat-parser': './tests/mocks/icu-parser.ts',
+      'intl-messageformat': './tests/mocks/intl-messageformat.ts',
     },
   },
   esbuild: {

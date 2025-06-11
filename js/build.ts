@@ -12,7 +12,13 @@ const BUILD_CONFIG = {
   outfile: 'dist/bundle.js',
   plugins: [nogodeyPlugin],
   format: 'esm',
-  external: ['react', 'react-native'],
+  external: [
+    'react',
+    'react-native',
+    'intl-messageformat',
+    'intl-messageformat-parser',
+    '../dist/messages.json',
+  ],
   sourcemap: true,
   write: true,
 } as const satisfies BuildOptions

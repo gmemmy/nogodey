@@ -96,6 +96,18 @@ const createParserOptions = (): ParserOptions =>
     plugins: [...PARSER_PLUGINS],
   }) as const
 
+// ICU detection helpers
+const ICU_PATTERN = /\{[^}]*?,\s*(plural|select)\s*,/i
+const ICU_VAR_RE = /\{(\w+)\s*,\s*(?:plural|select)/gi
+
+const extractIcuVars = (msg: string): string[] => {
+  const vars = new Set<string>()
+  for (const m of msg.matchAll(ICU_VAR_RE)) {
+    if (m[1]) vars.add(m[1])
+  }
+  return [...vars]
+}
+
 const plugin: Plugin = {
   name: 'nogodey-ast',
   setup(build: PluginBuild): void {
@@ -154,7 +166,8 @@ const plugin: Plugin = {
                 )
 
                 // Transform JSXText children
-                node.children = node.children.map(child => {
+                // biome-ignore lint/suspicious/noExplicitAny: child nodes can be various JSX types
+                node.children = node.children.map((child: any) => {
                   if (child.type === 'JSXText' && child.value?.trim()) {
                     const txt = child.value.trim()
                     const key = buildKey(filePath, txt)
@@ -174,13 +187,27 @@ const plugin: Plugin = {
                     recordMessage(key, txt, filePath, loc)
                     transformCount++
 
+                    const isIcu = ICU_PATTERN.test(txt)
+                    const argNodes: t.Expression[] = [{type: 'StringLiteral', value: key}]
+                    if (isIcu) {
+                      const vars = extractIcuVars(txt)
+                      const props: t.ObjectProperty[] = vars.map(v => ({
+                        type: 'ObjectProperty',
+                        key: {type: 'Identifier', name: v},
+                        value: {type: 'Identifier', name: v},
+                        shorthand: true,
+                        computed: false,
+                      }))
+                      argNodes.push({type: 'ObjectExpression', properties: props})
+                    }
+
                     // Replace with JSXExpressionContainer calling __NOGO__
                     return {
                       type: 'JSXExpressionContainer',
                       expression: {
                         type: 'CallExpression',
                         callee: {type: 'Identifier', name: '__NOGO__'},
-                        arguments: [{type: 'StringLiteral', value: key}],
+                        arguments: argNodes,
                       },
                     } as t.JSXExpressionContainer
                   }
@@ -217,13 +244,27 @@ const plugin: Plugin = {
                   recordMessage(key, txt, filePath, loc)
                   transformCount++
 
+                  const isIcu = ICU_PATTERN.test(txt)
+                  const argNodes: t.Expression[] = [{type: 'StringLiteral', value: key}]
+                  if (isIcu) {
+                    const vars = extractIcuVars(txt)
+                    const props: t.ObjectProperty[] = vars.map(v => ({
+                      type: 'ObjectProperty',
+                      key: {type: 'Identifier', name: v},
+                      value: {type: 'Identifier', name: v},
+                      shorthand: true,
+                      computed: false,
+                    }))
+                    argNodes.push({type: 'ObjectExpression', properties: props})
+                  }
+
                   // Replace with JSXExpressionContainer calling __NOGO__
                   node.value = {
                     type: 'JSXExpressionContainer',
                     expression: {
                       type: 'CallExpression',
                       callee: {type: 'Identifier', name: '__NOGO__'},
-                      arguments: [{type: 'StringLiteral', value: key}],
+                      arguments: argNodes,
                     },
                   } as t.JSXExpressionContainer
                 }
