@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/you/nogodey/cmd/nogodey/logger"
+	"github.com/you/nogodey/internal/syncer"
 )
 
 func main() {
@@ -53,9 +54,9 @@ func runSyncCommand() error {
 	}
 
 	// Get configuration from environment variables and flags
-	config := getEnvConfig(locales, *batchSizeFlag, *maxRetriesFlag)
+	config := syncer.GetEnvConfig(locales, *batchSizeFlag, *maxRetriesFlag)
 
-	return syncCommand(config)
+	return syncer.SyncCommand(config)
 }
 
 func runBuildCommand(log *logger.Logger) {
