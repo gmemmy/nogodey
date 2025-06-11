@@ -8,6 +8,7 @@ const opts = wrapPlugins({
   outfile: 'bundle.js',
   sourcemap: true,
   format: 'esm',
+  external: ['react', 'react-native'],
   plugins: [nogodeyPlugin],
 });
 

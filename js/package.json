@@ -3,11 +3,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.js"
+    "build": "tsx build.ts",
+    "plugin": "tsx plugin.ts --build"
   },
   "dependencies": {
     "esbuild": "^0.25.0",
     "esbuild-extra": "^0.4.0",
+    "estree-walker-ts": "^1.1.0",
     "slug": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/estree-jsx": "^1.0.5",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.7",
+    "@types/react-native": "^0.72.8",
+    "@types/slug": "^5.0.9",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
-} 
+}
