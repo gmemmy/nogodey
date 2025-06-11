@@ -224,6 +224,6 @@ func TestIntegrationWithRealProject(t *testing.T) {
 	projectDir := filepath.Join(tmpDir, "test-project")
 	err = os.MkdirAll(projectDir, 0o755)
 	require.NoError(t, err)
-	
+
 	t.Log("Integration test placeholder - would test real project build")
 }

@@ -2,6 +2,7 @@ import nogodeyPlugin from '@nogodey/plugin'
 import type {BuildOptions, BuildResult} from 'esbuild'
 import {build} from 'esbuild'
 import {wrapPlugins} from 'esbuild-extra'
+import * as logger from './src/logger.js'
 
 const BUILD_CONFIG = {
   entryPoints: ['src/index.tsx'],
@@ -24,27 +25,51 @@ class BuildError extends Error {
 }
 
 const buildProject = async (): Promise<void> => {
+  const buildTimer = logger.startTimer('esbuild_execution')
+  
   try {
+    logger.info({ 
+      entryPoints: BUILD_CONFIG.entryPoints,
+      outfile: BUILD_CONFIG.outfile,
+      format: BUILD_CONFIG.format,
+    }, 'starting esbuild compilation')
+
     const result: BuildResult = await build(wrapPlugins(BUILD_CONFIG))
+    buildTimer.observe()
 
     if (result.errors.length > 0) {
+      logger.error({ 
+        errorCount: result.errors.length,
+        errors: result.errors,
+      }, 'build compilation failed')
       throw new BuildError('Build compilation failed', result.errors)
     }
 
     if (result.warnings.length > 0) {
-      console.warn('⚠️ Build warnings:', result.warnings)
+      logger.warn({ 
+        warningCount: result.warnings.length,
+        warnings: result.warnings,
+      }, 'build completed with warnings')
     }
 
-    console.log('✅ Build completed successfully')
+    logger.info({ 
+      status: 'success',
+      outfile: BUILD_CONFIG.outfile,
+    }, 'build completed successfully')
   } catch (error) {
+    buildTimer.observe()
+    
     if (error instanceof BuildError) {
-      console.error('❌ Build failed:', error.message)
-      if (error.details) {
-        console.error('Details:', error.details)
-      }
+      logger.error({ 
+        errorType: 'BuildError',
+        details: error.details,
+      }, error.message)
     } else {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      console.error('❌ Unexpected build error:', errorMessage)
+      logger.error({ 
+        errorType: 'UnexpectedError',
+        errorMessage,
+      }, 'unexpected build error occurred')
     }
 
     // using process.exitCode instead of process.exit for better testing
@@ -56,15 +81,22 @@ const buildProject = async (): Promise<void> => {
 // only execute if this is the main module
 if (import.meta.url === new URL(process.argv[1]!, 'file://').href) {
   ;(async (): Promise<void> => {
+    const processTimer = logger.startTimer('build_process')
+    
+    logger.info({}, 'build process started')
+    
     try {
       await buildProject()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      console.error('❌ Fatal error:', errorMessage)
+      logger.error({ 
+        errorMessage,
+        errorType: 'FatalError',
+      }, 'fatal error in build process')
       process.exitCode = 1
     } finally {
-      // Any cleanup or teardown logic can go here
-      console.log('🧹 Build process completed')
+      processTimer.observe()
+      logger.info({}, 'build process completed')
     }
   })()
 }

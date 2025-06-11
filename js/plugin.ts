@@ -6,6 +6,7 @@ import type * as t from '@babel/types'
 import type {Plugin, PluginBuild} from 'esbuild'
 import {getBuildExtensions} from 'esbuild-extra'
 import slug from 'slug'
+import * as logger from './src/logger.js'
 
 async function loadBabelModules() {
   const [traverseModule, generateModule] = await Promise.all([
@@ -112,12 +113,17 @@ const plugin: Plugin = {
           return {code}
         }
 
-        console.log('🛠 nogodey AST running on', filePath)
+        logger.info({ 
+          filePath,
+          fileSize: code.length,
+        }, 'starting AST transformation')
 
         if (!code) {
-          console.log('❌ No code provided in args')
+          logger.warn({ filePath }, 'no code provided in transform args')
           return {code}
         }
+
+        const transformTimer = logger.startTimer('ast_transform')
 
         try {
           const {traverse, generate} = await loadBabelModules()
@@ -134,7 +140,11 @@ const plugin: Plugin = {
                 openingElement.name.type === 'JSXIdentifier' &&
                 openingElement.name.name.toLowerCase() === 'text'
               ) {
-                console.log('Found Text element with children:', node.children?.length)
+                logger.info({ 
+                  filePath,
+                  elementType: 'Text',
+                  childrenCount: node.children?.length || 0,
+                }, 'found Text element')
 
                 // Transform JSXText children
                 node.children = node.children.map(child => {
@@ -143,7 +153,14 @@ const plugin: Plugin = {
                     const key = buildKey(filePath, txt)
                     const loc = createLocation(child)
 
-                    console.log(`Recording message: key=${key}, text="${txt}"`)
+                    logger.info({ 
+                      filePath,
+                      key,
+                      text: txt,
+                      line: loc.line,
+                      column: loc.column,
+                    }, 'recording text message')
+                    
                     recordMessage(key, txt, filePath, loc)
                     transformCount++
 
@@ -175,7 +192,15 @@ const plugin: Plugin = {
                   const key = buildKey(filePath, txt)
                   const loc = createLocation(node)
 
-                  console.log(`Recording attribute message: key=${key}, text="${txt}"`)
+                  logger.info({ 
+                    filePath,
+                    attributeName: node.name.name,
+                    key,
+                    text: txt,
+                    line: loc.line,
+                    column: loc.column,
+                  }, 'recording attribute message')
+                  
                   recordMessage(key, txt, filePath, loc)
                   transformCount++
 
@@ -193,7 +218,10 @@ const plugin: Plugin = {
             },
           })
 
-          console.log(`Transformed ${transformCount} text nodes`)
+          logger.info({ 
+            filePath,
+            transformCount,
+          }, 'AST traversal completed')
 
           // Generate the transformed code
           const generateOptions: GeneratorOptions = {
@@ -202,11 +230,25 @@ const plugin: Plugin = {
           } as const
 
           const result = generate(ast, generateOptions)
+          transformTimer.observe()
+
+          logger.info({ 
+            filePath,
+            transformCount,
+            outputSize: result.code.length,
+          }, 'AST transformation completed')
 
           return {code: result.code}
         } catch (error) {
+          transformTimer.observe()
           const errorMessage = error instanceof Error ? error.message : String(error)
-          console.error('❌ Error during AST parsing/transformation:', errorMessage)
+          
+          logger.error({ 
+            filePath,
+            errorMessage,
+            errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+          }, 'error during AST parsing/transformation')
+          
           return {code}
         }
       }
@@ -215,8 +257,15 @@ const plugin: Plugin = {
     // Write messages.json at the end of the build
     build.onEnd((): void => {
       const outputPath = 'messages.json' as const
+      const writeTimer = logger.startTimer('messages_write')
+      
       writeFileSync(outputPath, JSON.stringify(messages, null, 2))
-      console.log(`Extracted ${messages.length} messages → ${outputPath}`)
+      writeTimer.observe()
+      
+      logger.info({ 
+        messageCount: messages.length,
+        outputPath,
+      }, 'extracted messages written to file')
 
       // Clear messages for next build
       messages.length = 0
@@ -225,4 +274,3 @@ const plugin: Plugin = {
 } as const
 
 export default plugin
-// Test change
