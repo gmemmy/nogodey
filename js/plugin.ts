@@ -1,4 +1,5 @@
-import {writeFileSync} from 'node:fs'
+import {mkdirSync, writeFileSync} from 'node:fs'
+import {dirname} from 'node:path'
 import type {GeneratorOptions} from '@babel/generator'
 import {type ParserOptions, parse} from '@babel/parser'
 import type {NodePath, Visitor} from '@babel/traverse'
@@ -256,8 +257,15 @@ const plugin: Plugin = {
 
     // Write messages.json at the end of the build
     build.onEnd((): void => {
-      const outputPath = 'messages.json' as const
+      const outputPath = 'dist/messages.json' as const
       const writeTimer = logger.startTimer('messages_write')
+      
+      // Ensure output directory exists
+      try {
+        mkdirSync(dirname(outputPath), { recursive: true })
+      } catch (error) {
+        // Directory might already exist, which is fine
+      }
       
       writeFileSync(outputPath, JSON.stringify(messages, null, 2))
       writeTimer.observe()

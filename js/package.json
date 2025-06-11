@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsx build.ts",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsx build.ts",
     "plugin": "tsx plugin.ts --build",
     "test": "vitest",
     "test:watch": "vitest --watch",

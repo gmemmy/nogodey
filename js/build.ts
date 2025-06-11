@@ -2,15 +2,18 @@ import nogodeyPlugin from '@nogodey/plugin'
 import type {BuildOptions, BuildResult} from 'esbuild'
 import {build} from 'esbuild'
 import {wrapPlugins} from 'esbuild-extra'
+import {mkdirSync} from 'node:fs'
+import {dirname} from 'node:path'
 import * as logger from './src/logger.js'
 
 const BUILD_CONFIG = {
   entryPoints: ['src/index.tsx'],
   bundle: true,
-  outfile: 'bundle.js',
+  outfile: 'dist/bundle.js',
   plugins: [nogodeyPlugin],
   format: 'esm',
   external: ['react', 'react-native'],
+  sourcemap: true,
   write: true,
 } as const satisfies BuildOptions
 
@@ -24,10 +27,26 @@ class BuildError extends Error {
   }
 }
 
+const ensureOutputDirectory = (outfile: string): void => {
+  const dir = dirname(outfile)
+  try {
+    mkdirSync(dir, { recursive: true })
+    logger.info({ directory: dir }, 'ensured output directory exists')
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    logger.warn({ 
+      directory: dir, 
+      error: errorMessage 
+    }, 'failed to create output directory')
+  }
+}
+
 const buildProject = async (): Promise<void> => {
   const buildTimer = logger.startTimer('esbuild_execution')
   
   try {
+    ensureOutputDirectory(BUILD_CONFIG.outfile)
+    
     logger.info({ 
       entryPoints: BUILD_CONFIG.entryPoints,
       outfile: BUILD_CONFIG.outfile,

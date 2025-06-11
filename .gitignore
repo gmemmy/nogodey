@@ -34,8 +34,7 @@ js/node_modules/
 .env.* 
 
 # nogodey build outputs ----------------------------
-/js/bundle.js
-/js/bundle.js.map
+/js/dist/
 
 # Test outputs -------------------------------------
 js/coverage/
