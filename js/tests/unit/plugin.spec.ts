@@ -27,13 +27,17 @@ function makeBuild() {
 describe('nogodey plugin transform edge cases', () => {
   test('skips files in node_modules', async () => {
     const {calls} = makeBuild()
-    const res = await calls[0]!({code: 'x', path: '/a/node_modules/foo.tsx'})
+    const transform = calls[0]
+    if (!transform) throw new Error('transform callback not registered')
+    const res = await transform({code: 'x', path: '/a/node_modules/foo.tsx'})
     expect(res.code).toBe('x')
   })
 
   test('empty code returns untouched', async () => {
     const {calls} = makeBuild()
-    const res = await calls[0]!({code: '', path: '/a/file.tsx'})
+    const transform = calls[0]
+    if (!transform) throw new Error('transform callback not registered')
+    const res = await transform({code: '', path: '/a/file.tsx'})
     expect(res.code).toBe('')
   })
 })
