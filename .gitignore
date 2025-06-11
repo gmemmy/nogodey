@@ -31,7 +31,8 @@ js/node_modules/
 
 # Misc ---------------------------------------------
 .env
-.env.* 
+.env.*
+!.env.example
 
 # nogodey build outputs ----------------------------
 /js/dist/

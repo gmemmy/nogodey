@@ -23,6 +23,15 @@ help: ## Display this help message
 setup: install-deps setup-hooks ## Complete project setup (install deps + git hooks)
 	@echo "$(GREEN)✓ Project setup complete!$(RESET)"
 
+setup-env: ## Create .env file from template
+	@if [ ! -f .env ]; then \
+		cp env.example .env; \
+		echo "$(GREEN)✓ Created .env file from template$(RESET)"; \
+		echo "$(YELLOW)⚠ Please edit .env and add your OpenAI API key$(RESET)"; \
+	else \
+		echo "$(YELLOW)⚠ .env file already exists$(RESET)"; \
+	fi
+
 install: install-deps ## Install all dependencies (Go + JS)
 
 install-deps: install-go install-js ## Install dependencies for both Go and JS components
@@ -58,6 +67,20 @@ build-plugin: ## Build the esbuild plugin specifically
 	@echo "$(CYAN)Building esbuild plugin...$(RESET)"
 	@cd js && npm run plugin
 
+##@ Translation Commands
+
+sync: ## Sync translations for default locale (pidgin)
+	@echo "$(CYAN)Syncing translations...$(RESET)"
+	@./bin/nogodey sync
+
+sync-all: ## Sync translations for multiple locales
+	@echo "$(CYAN)Syncing translations for multiple locales...$(RESET)"
+	@./bin/nogodey sync --locales pidgin,en
+
+sync-locale: ## Sync specific locale (usage: make sync-locale LOCALE=fr)
+	@echo "$(CYAN)Syncing translations for $(LOCALE)...$(RESET)"
+	@./bin/nogodey sync --locales $(LOCALE)
+
 ##@ Testing Commands
 
 test: test-go test-js ## Run all tests (Go + JS)
@@ -65,6 +88,10 @@ test: test-go test-js ## Run all tests (Go + JS)
 test-go: ## Run Go tests
 	@echo "$(CYAN)Running Go tests...$(RESET)"
 	@go test -v ./...
+
+test-sync: ## Run sync-related tests only
+	@echo "$(CYAN)Running sync tests...$(RESET)"
+	@go test ./cmd/nogodey -run "Test.*JSON|TestDiffKeys|TestBuildTranslationPrompt|TestSyncConfig" -v
 
 test-js: ## Run JavaScript tests
 	@echo "$(CYAN)Running JavaScript tests...$(RESET)"
