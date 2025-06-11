@@ -10,6 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// nodeAvailable reports whether both `node` and `tsx` executables are on PATH.
+func nodeAvailable() bool {
+	if _, err := exec.LookPath("node"); err != nil {
+		return false
+	}
+	if _, err := exec.LookPath("tsx"); err != nil {
+		return false
+	}
+	return true
+}
+
 func TestMain(m *testing.M) {
 	// Setup test environment
 	code := m.Run()
@@ -18,6 +29,10 @@ func TestMain(m *testing.M) {
 }
 
 func TestBuildCommand(t *testing.T) {
+	if !nodeAvailable() {
+		t.Skip("node or tsx not installed; skipping build command tests")
+	}
+
 	tests := []struct {
 		name           string
 		workingDir     string
@@ -76,6 +91,10 @@ func TestBuildCommand(t *testing.T) {
 }
 
 func TestCommandConstruction(t *testing.T) {
+	if !nodeAvailable() {
+		t.Skip("node or tsx not installed; skipping command construction tests")
+	}
+
 	tests := []struct {
 		name         string
 		expectedArgs []string
@@ -95,8 +114,8 @@ func TestCommandConstruction(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := exec.Command(tt.expectedArgs[0], tt.expectedArgs[1:]...)
 
-			assert.Equal(t, "node", cmd.Path)
-			assert.Equal(t, tt.expectedArgs, cmd.Args)
+			assert.Equal(t, "node", filepath.Base(cmd.Path))
+			assert.Equal(t, tt.expectedArgs[1:], cmd.Args[1:])
 		})
 	}
 }

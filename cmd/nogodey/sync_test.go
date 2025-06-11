@@ -11,7 +11,6 @@ import (
 )
 
 func TestReadMessagesJSON(t *testing.T) {
-	// Create a temporary messages.json file
 	tempDir := t.TempDir()
 	messagesFile := filepath.Join(tempDir, "messages.json")
 
@@ -40,7 +39,6 @@ func TestReadMessagesJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(messagesFile, data, 0o644))
 
-	// Test reading the file
 	messages, err := readMessagesJSON(messagesFile)
 	require.NoError(t, err)
 	assert.Len(t, messages, 2)
@@ -79,7 +77,6 @@ func TestWriteLocaleJSON(t *testing.T) {
 		"key2": "Value 2",
 	}
 
-	// Test writing the file
 	err := writeLocaleJSON(localeFile, testTranslations)
 	require.NoError(t, err)
 

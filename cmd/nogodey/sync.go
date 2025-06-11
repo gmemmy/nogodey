@@ -34,6 +34,12 @@ type SyncConfig struct {
 	MaxRetries  int
 	OpenAIKey   string
 	OpenAIModel string
+	Client      ChatClient
+}
+
+// ChatClient is an interface that wraps the CreateChatCompletion method
+type ChatClient interface {
+	CreateChatCompletion(ctx context.Context, req openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error)
 }
 
 // loadEnvConfig loads configuration from environment variables and .env file
@@ -153,10 +159,11 @@ func syncLocale(log *logger.Logger, messages []Message, locale string, config Sy
 
 	log.Info("found missing keys", "locale", locale, "count", len(missingKeys))
 
-	// Process missing keys in batches
-	client := openai.NewClient(config.OpenAIKey)
-	if client == nil {
-		return fmt.Errorf("failed to create OpenAI client")
+	var client ChatClient
+	if config.Client != nil {
+		client = config.Client
+	} else {
+		client = openai.NewClient(config.OpenAIKey)
 	}
 
 	for i := 0; i < len(missingKeys); i += config.BatchSize {
@@ -193,8 +200,8 @@ func syncLocale(log *logger.Logger, messages []Message, locale string, config Sy
 	return nil
 }
 
-// translateBatch translates a batch of keys using OpenAI
-func translateBatch(log *logger.Logger, client *openai.Client, batch []Message, locale string, config SyncConfig) (map[string]string, error) {
+// translateBatch translates a batch of keys using the LLM
+func translateBatch(log *logger.Logger, client ChatClient, batch []Message, locale string, config SyncConfig) (map[string]string, error) {
 	prompt := buildTranslationPrompt(batch, locale)
 
 	var lastErr error
@@ -305,8 +312,8 @@ func buildTranslationPrompt(batch []Message, locale string) string {
 	return builder.String()
 }
 
-// callLLM makes a request to OpenAI and parses the response
-func callLLM(log *logger.Logger, client *openai.Client, prompt, model string) (map[string]string, error) {
+// callLLM makes a request to the LLM and parses the response
+func callLLM(log *logger.Logger, client ChatClient, prompt, model string) (map[string]string, error) {
 	apiTimer := logger.StartTimer("openai_api_call")
 	defer apiTimer.ObserveWithLogger(log)
 
