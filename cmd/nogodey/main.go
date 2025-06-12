@@ -29,6 +29,8 @@ func main() {
 		}
 	case "build":
 		runBuildCommand(log)
+	case "install":
+		runInstallCommand()
 	case "help", "--help", "-h":
 		printHelp()
 	default:
@@ -110,6 +112,7 @@ USAGE:
 COMMANDS:
     build                    Build the JavaScript plugin (default)
     sync                     Sync translations using OpenAI
+    install                  Install the plugin
     help                     Show this help message
 
 SYNC OPTIONS:
