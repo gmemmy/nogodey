@@ -2,7 +2,7 @@
 
 Zero-boilerplate localization toolkit for React Native and JavaScript/TypeScript projects
 
-[![Test Coverage](https://codecov.io/gh/you/nogodey/branch/main/graph/badge.svg)](https://codecov.io/gh/you/nogodey)
+[![codecov](https://codecov.io/gh/gmemmy/nogodey/graph/badge.svg?token=T516RP2LLQ)](https://codecov.io/gh/gmemmy/nogodey)
 
 ## 🏗️ Architecture
 
