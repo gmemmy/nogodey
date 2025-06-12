@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"io"
 	"os"
@@ -64,10 +65,108 @@ func detectExpo(root string) bool {
 	return false
 }
 
-// installExpoPlugin installs the Nogodey Expo plugin (stub implementation).
+// installExpoPlugin installs the Nogodey Expo plugin.
 func installExpoPlugin(root string) error {
 	log := logger.New()
-	log.Info(">> expo-plugin-nogodey installed (stub)", "root", root)
+	log.Info("installing expo-plugin-nogodey", "root", root)
+
+	destDir := filepath.Join(root, "ios", "Plugins", "nogodey")
+	if err := os.MkdirAll(destDir, 0o755); err != nil {
+		log.Error("failed to create destination directory", "dir", destDir, "error", err.Error())
+		return err
+	}
+	log.Info("created destination directory", "path", destDir)
+
+	templates := []string{
+		"NogoLLM.swift",
+		"NogoLLM-Bridging-Header.h",
+	}
+
+	for _, name := range templates {
+		src := filepath.Join("cmd", "nogodey", "internal", "templates", name)
+		dst := filepath.Join(destDir, name)
+
+		if err := copyFile(src, dst); err != nil {
+			log.Error("failed to copy template file", "src", src, "dst", dst, "error", err.Error())
+			return err
+		}
+		log.Info("copied template", "file", name, "to", dst)
+	}
+
+	// Update app.json configuration
+	appJsonPath := filepath.Join(root, "app.json")
+	file, err := os.ReadFile(appJsonPath)
+	if err != nil {
+		log.Error("failed to read app.json", "path", appJsonPath, "error", err.Error())
+		return err
+	}
+
+	var appJson map[string]interface{}
+	if err := json.Unmarshal(file, &appJson); err != nil {
+		log.Error("failed to parse app.json", "error", err.Error())
+		return err
+	}
+
+	expo, ok := appJson["expo"].(map[string]interface{})
+	if !ok {
+		expo = make(map[string]interface{})
+		appJson["expo"] = expo
+		log.Info("created expo configuration object in app.json")
+	}
+
+	// Ensure plugins array exists and add the plugin if not present
+	plugins, ok := expo["plugins"].([]interface{})
+	if !ok {
+		plugins = make([]interface{}, 0)
+	}
+
+	pluginExists := false
+	for _, plugin := range plugins {
+		if plugin == "expo-plugin-nogodey" {
+			pluginExists = true
+			break
+		}
+	}
+
+	if !pluginExists {
+		plugins = append(plugins, "expo-plugin-nogodey")
+		expo["plugins"] = plugins
+		log.Info("added expo-plugin-nogodey to expo.plugins")
+	} else {
+		log.Info("expo-plugin-nogodey already in expo.plugins")
+	}
+
+	// Ensure ios object and entitlements exist
+	ios, ok := expo["ios"].(map[string]interface{})
+	if !ok {
+		ios = make(map[string]interface{})
+		expo["ios"] = ios
+	}
+
+	entitlements, ok := ios["entitlements"].(map[string]interface{})
+	if !ok {
+		entitlements = make(map[string]interface{})
+		ios["entitlements"] = entitlements
+	}
+
+	// Set ML model inference entitlement
+	entitlements["com.apple.developer.ml.model-inference"] = true
+	log.Info("set ML model inference entitlement")
+
+	// Write updated app.json back to disk
+	updatedJson, err := json.MarshalIndent(appJson, "", "  ")
+	if err != nil {
+		log.Error("failed to marshal updated app.json", "error", err.Error())
+		return err
+	}
+
+	if err := os.WriteFile(appJsonPath, updatedJson, 0o644); err != nil {
+		log.Error("failed to write updated app.json", "error", err.Error())
+		return err
+	}
+	log.Info("updated app.json configuration")
+
+	log.Info("expo-plugin-nogodey installed successfully")
 	return nil
 }
 

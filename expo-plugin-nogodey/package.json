@@ -1,0 +1,28 @@
+{
+  "name": "expo-plugin-nogodey",
+  "version": "1.0.0",
+  "description": "Expo Config Plugin for Nogodey LLM integration",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": [
+    "expo",
+    "expo-plugin",
+    "nogodey",
+    "llm",
+    "machine-learning"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/you/nogodey"
+  },
+  "files": [
+    "ios/**/*",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "expo": ">=46.0.0"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "^5.0.0"
+  }
+} 
