@@ -27,6 +27,7 @@ coverage.out
 # Node artifacts -----------------------------------
 node_modules/
 js/node_modules/
+expo-plugin-nogodey/node_modules/
 .pnpm-store/
 
 # Misc ---------------------------------------------
@@ -36,6 +37,7 @@ js/node_modules/
 
 # nogodey build outputs ----------------------------
 /js/dist/
+/expo-plugin-nogodey/dist/
 
 # Test outputs -------------------------------------
 js/coverage/

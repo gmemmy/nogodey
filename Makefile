@@ -67,6 +67,11 @@ build-plugin: ## Build the esbuild plugin specifically
 	@echo "$(CYAN)Building esbuild plugin...$(RESET)"
 	@cd js && npm run plugin
 
+sync-templates: ## Sync templates from internal/templates to expo plugin
+	@echo "$(CYAN)Syncing templates to expo plugin...$(RESET)"
+	@rsync -av cmd/nogodey/internal/templates/ expo-plugin-nogodey/ios/Plugins/nogodey/
+	@echo "$(GREEN)✓ Templates synced successfully$(RESET)"
+
 ##@ Translation Commands
 
 sync: ## Sync translations for default locale (pidgin)
