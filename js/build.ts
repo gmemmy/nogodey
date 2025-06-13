@@ -16,7 +16,7 @@ const BUILD_CONFIG = {
     'react',
     'react-native',
     'intl-messageformat',
-    'intl-messageformat-parser',
+    '@formatjs/icu-messageformat-parser',
     '../dist/messages.json',
   ],
   sourcemap: true,
@@ -125,7 +125,7 @@ const buildProject = async (): Promise<void> => {
 }
 
 // only execute if this is the main module
-if (import.meta.url === new URL(process.argv[1]!, 'file://').href) {
+if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file://').href) {
   ;(async (): Promise<void> => {
     const processTimer = logger.startTimer('build_process')
 

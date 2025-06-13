@@ -35,33 +35,25 @@ func TestDetectExpo(t *testing.T) {
 }
 
 func TestRunInstall_Expo(t *testing.T) {
-	// Setup Expo project structure
 	expoDir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(expoDir, "app.json"), []byte("{}"), 0o644); err != nil {
 		t.Fatalf("unable to create app.json: %v", err)
 	}
 
-	// this should complete without exiting the test process.
 	runInstall(expoDir)
+
+	// Verify that the installation completed successfully
+	expectedFiles := []string{"NogoLLM.swift", "NogoLLM-Bridging-Header.h"}
+	for _, filename := range expectedFiles {
+		destPath := filepath.Join(expoDir, "ios", "Plugins", "nogodey", filename)
+		if _, err := os.Stat(destPath); os.IsNotExist(err) {
+			t.Errorf("expected file %s was not copied to %s", filename, destPath)
+		}
+	}
 }
 
 func TestRunInstall_Bare(t *testing.T) {
-	// Setup bare project (no app.json)
 	bareDir := t.TempDir()
-
-	// Ensure internal/templates directory with dummy files exists relative to cwd.
-	templatesDir := filepath.Join("internal", "templates")
-	if err := os.MkdirAll(templatesDir, 0o755); err != nil {
-		t.Fatalf("unable to create templates dir: %v", err)
-	}
-
-	dummyContent := []byte("// swift dummy\n")
-	files := []string{"NogoLLM.swift", "NogoLLM-Bridging-Header.h"}
-	for _, f := range files {
-		if err := os.WriteFile(filepath.Join(templatesDir, f), dummyContent, 0o644); err != nil {
-			t.Fatalf("unable to create template file %s: %v", f, err)
-		}
-	}
 
 	// Ensure 'pod' is not discoverable during test to skip actual pod install.
 	originalPath := os.Getenv("PATH")

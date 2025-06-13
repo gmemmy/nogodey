@@ -77,13 +77,14 @@ func installExpoPlugin(root string) error {
 	}
 	log.Info("created destination directory", "path", destDir)
 
-	templates := []string{
-		"NogoLLM.swift",
-		"NogoLLM-Bridging-Header.h",
+	templates, err := getTemplatesPath()
+	if err != nil {
+		log.Error("failed to get templates path", "error", err.Error())
+		return err
 	}
 
-	for _, name := range templates {
-		src := filepath.Join("cmd", "nogodey", "internal", "templates", name)
+	for _, name := range []string{"NogoLLM.swift", "NogoLLM-Bridging-Header.h"} {
+		src := filepath.Join(templates, name)
 		dst := filepath.Join(destDir, name)
 
 		if err := copyFile(src, dst); err != nil {
@@ -180,13 +181,14 @@ func installBareRN(root string) error {
 		return err
 	}
 
-	templates := []string{
-		"NogoLLM.swift",
-		"NogoLLM-Bridging-Header.h",
+	templates, err := getTemplatesPath()
+	if err != nil {
+		log.Error("failed to get templates path", "error", err.Error())
+		return err
 	}
 
-	for _, name := range templates {
-		src := filepath.Join("internal", "templates", name)
+	for _, name := range []string{"NogoLLM.swift", "NogoLLM-Bridging-Header.h"} {
+		src := filepath.Join(templates, name)
 		dst := filepath.Join(destDir, name)
 
 		if err := copyFile(src, dst); err != nil {
@@ -285,4 +287,31 @@ func appendPodfileLines(podfilePath string, log *logger.Logger) error {
 	}
 	log.Info("appended nogodey pod entry to Podfile")
 	return nil
+}
+
+// getTemplatesPath returns the absolute path to the templates directory
+func getTemplatesPath() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := os.Stat(filepath.Join(wd, "go.mod")); err == nil {
+		return filepath.Join(wd, "cmd", "nogodey", "internal", "templates"), nil
+	}
+
+	// If not in project root, try to find it by going up directories
+	for {
+		if _, err := os.Stat(filepath.Join(wd, "go.mod")); err == nil {
+			return filepath.Join(wd, "cmd", "nogodey", "internal", "templates"), nil
+		}
+		parent := filepath.Dir(wd)
+		if parent == wd {
+			break
+		}
+		wd = parent
+	}
+
+	// Fallback to relative path
+	return filepath.Join("cmd", "nogodey", "internal", "templates"), nil
 }
