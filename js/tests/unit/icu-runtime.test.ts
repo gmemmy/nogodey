@@ -1,7 +1,7 @@
 import {describe, expect, test, vi} from 'vitest'
 
 // Mock external ICU libs to keep tests self-contained
-vi.mock('intl-messageformat-parser', () => ({
+vi.mock('@formatjs/icu-messageformat-parser', () => ({
   parse: (msg: string) => msg,
 }))
 
