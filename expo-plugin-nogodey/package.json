@@ -1,28 +1,36 @@
 {
   "name": "expo-plugin-nogodey",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Expo Config Plugin for Nogodey LLM integration",
-  "main": "index.js",
-  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "ios"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "prepare": "npm run build"
+  },
   "keywords": [
     "expo",
-    "expo-plugin",
+    "config-plugin",
     "nogodey",
-    "llm",
-    "machine-learning"
+    "llm"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/you/nogodey"
-  },
-  "files": [
-    "ios/**/*",
-    "index.js"
-  ],
+  "author": "Emmanuel Atawodi",
+  "license": "MIT",
   "peerDependencies": {
-    "expo": ">=46.0.0"
+    "expo": ">=49.0.0"
   },
-  "dependencies": {
-    "@expo/config-plugins": "^5.0.0"
+  "devDependencies": {
+    "@expo/config-plugins": "^7.0.0",
+    "@expo/config-types": "^53.0.4",
+    "@types/node": "^20.0.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.0"
   }
-} 
+}

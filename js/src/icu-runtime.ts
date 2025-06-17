@@ -1,9 +1,9 @@
+// biome-ignore lint/suspicious/noExplicitAny: external library without types in ambient.
+// @ts-ignore
+import {parse} from '@formatjs/icu-messageformat-parser'
 // biome-ignore lint/suspicious/noExplicitAny: external library without types.
 // @ts-ignore
 import IntlMessageFormat from 'intl-messageformat'
-// biome-ignore lint/suspicious/noExplicitAny: external library without types in ambient.
-// @ts-ignore
-import {parse} from 'intl-messageformat-parser'
 
 // Very small cache to avoid recompiling the same message repeatedly.
 const CACHE = new Map<string, IntlMessageFormat>()

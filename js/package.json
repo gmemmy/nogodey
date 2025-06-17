@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "gen:types": "tsx scripts/generate-types.ts",
-    "build": "npm run clean && npm run gen:types && tsx build.ts",
+    "build": "pnpm run clean && pnpm run gen:types && tsx build.ts",
     "plugin": "tsx plugin.ts --build",
     "test": "vitest",
     "test:watch": "vitest --watch",
@@ -22,9 +22,9 @@
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "biome:ci": "biome ci .",
-    "quality": "npm run typecheck && npm run check && npm run test:ci",
-    "fix": "npm run check:fix && npm run typecheck",
-    "precommit": "npm run quality",
+    "quality": "pnpm run typecheck && pnpm run check && pnpm run test:ci",
+    "fix": "pnpm run check:fix && pnpm run typecheck",
+    "precommit": "pnpm run quality",
     "prepare": "husky",
     "pre-commit": "lint-staged"
   },
@@ -32,13 +32,14 @@
     "@babel/generator": "^7.27.5",
     "@babel/parser": "^7.27.5",
     "@babel/traverse": "^7.27.4",
+    "@formatjs/icu-messageformat-parser": "^2.11.2",
+    "@formatjs/intl-pluralrules": "^5.4.4",
     "esbuild": "^0.25.0",
     "esbuild-extra": "^0.4.0",
     "estree-walker-ts": "^1.1.0",
-    "slug": "^11.0.0",
     "intl-messageformat": "^10.6.5",
-    "intl-messageformat-parser": "^2.6.11",
-    "@formatjs/intl-pluralrules": "^4.4.5"
+    "openai": "^5.3.0",
+    "slug": "^11.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.27.6",
@@ -58,10 +59,10 @@
     "happy-dom": "^16.8.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
+    "ts-node": "^10.9.2",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^2.1.8",
-    "ts-node": "^10.9.2"
+    "vitest": "^2.1.8"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
