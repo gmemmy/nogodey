@@ -10,12 +10,22 @@
     "ignore": [
       "node_modules/**",
       "dist/**",
+      "build/**",
       "coverage/**",
       "bundle.js*",
       "*.d.ts",
       "tests/fixtures/**",
-      "../expo-plugin-nogodey/build/**",
-      "../expo-plugin-nogodey/dist/**"
+      "expo-plugin-nogodey/build/**",
+      "expo-plugin-nogodey/dist/**",
+      "examples/*/node_modules/**",
+      "examples/*/.expo/**",
+      "examples/*/dist/**",
+      "examples/*/build/**",
+      "bin/**",
+      "*.go",
+      "go.mod",
+      "go.sum",
+      "Makefile"
     ]
   },
   "formatter": {

@@ -1,6 +1,6 @@
 export type Meta = Record<string, unknown>
 
-interface LogEntry {
+type LogEntry = {
   level: string
   message: string
   timestamp: string
