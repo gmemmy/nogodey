@@ -2,3 +2,4 @@ packages:
   - 'js'
   - 'expo-plugin-nogodey'
   - 'examples/*' 
+  

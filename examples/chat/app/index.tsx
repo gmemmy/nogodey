@@ -1,16 +1,15 @@
-import {StatusBar} from 'expo-status-bar'
 import * as React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-import {ChatListScreen} from './screens/ChatListScreen'
-import {ConversationScreen} from './screens/ConversationScreen'
+import {ChatListScreen} from '../screens/ChatListScreen'
+import {ConversationScreen} from '../screens/ConversationScreen'
 
 type NavigationState = {
   screen: 'ChatList' | 'Conversation'
   chatId?: string
 }
 
-export default function App() {
+export default function Page() {
   const [navigation, setNavigation] = React.useState<NavigationState>({
     screen: 'ChatList',
   })
@@ -36,7 +35,6 @@ export default function App() {
         ) : (
           <ConversationScreen chatId={navigation.chatId!} onBack={handleBack} />
         )}
-        <StatusBar style="dark" />
       </View>
     </GestureHandlerRootView>
   )

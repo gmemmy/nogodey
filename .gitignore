@@ -25,7 +25,6 @@ yarn-error.log*
 coverage.out
 
 # Node artifacts -----------------------------------
-node_modules/
 **/node_modules/
 .pnpm-store/
 examples/**/.expo/
