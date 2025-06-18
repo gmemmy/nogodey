@@ -17,11 +17,11 @@ npx lint-staged
 
 # Type checking
 echo "🔍 Running TypeScript type check..."
-npm run typecheck
+pnpm run typecheck
 
 # Run tests
 echo "🧪 Running tests..."
-npm run test:ci
+pnpm run test:ci
 
 cd - > /dev/null || exit 1
 
