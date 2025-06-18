@@ -4,10 +4,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {ChatListScreen} from '../screens/ChatListScreen'
 import {ConversationScreen} from '../screens/ConversationScreen'
 
-type NavigationState = {
-  screen: 'ChatList' | 'Conversation'
-  chatId?: string
-}
+type NavigationState = {screen: 'ChatList'} | {screen: 'Conversation'; chatId: string}
 
 export default function Page() {
   const [navigation, setNavigation] = React.useState<NavigationState>({
@@ -33,7 +30,7 @@ export default function Page() {
         {navigation.screen === 'ChatList' ? (
           <ChatListScreen onChatPress={handleChatPress} />
         ) : (
-          <ConversationScreen chatId={navigation.chatId!} onBack={handleBack} />
+          <ConversationScreen chatId={navigation.chatId} onBack={handleBack} />
         )}
       </View>
     </GestureHandlerRootView>

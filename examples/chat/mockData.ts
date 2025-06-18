@@ -174,7 +174,10 @@ for (const chat of mockChats) {
 }
 
 export const chatListData: ChatListItem[] = mockChats.map(chat => {
-  const otherUser = chat.participants.find(p => p.id !== 'current-user')!
+  const otherUser = chat.participants.find(p => p.id !== 'current-user')
+  if (!otherUser) {
+    throw new Error(`No other participant found in chat ${chat.id}`)
+  }
   return {
     id: chat.id,
     title: chat.title,

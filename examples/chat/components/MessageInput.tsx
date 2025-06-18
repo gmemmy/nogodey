@@ -35,7 +35,7 @@ export const MessageInput = ({onSendMessage, placeholder = 'Type a message...'}:
         <TouchableOpacity
           style={[
             styles.sendButton,
-            message.trim() ? styles.sendButtonactive : styles.sendButtonInactive,
+            message.trim() ? styles.sendButtonActive : styles.sendButtonInactive,
           ]}
           onPress={handleSend}
           disabled={!message.trim()}
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minWidth: 60,
   },
-  sendButtonactive: {
+  sendButtonActive: {
     backgroundColor: '#8b5cf6',
     shadowColor: '#8b5cf6',
     shadowOffset: {width: 0, height: 2},

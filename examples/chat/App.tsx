@@ -33,8 +33,10 @@ export default function App() {
       <View style={styles.container}>
         {navigation.screen === 'ChatList' ? (
           <ChatListScreen onChatPress={handleChatPress} />
+        ) : navigation.screen === 'Conversation' && navigation.chatId ? (
+          <ConversationScreen chatId={navigation.chatId} onBack={handleBack} />
         ) : (
-          <ConversationScreen chatId={navigation.chatId!} onBack={handleBack} />
+          <ChatListScreen onChatPress={handleChatPress} />
         )}
         <StatusBar style="dark" />
       </View>
