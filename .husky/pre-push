@@ -12,13 +12,13 @@ echo "📝 Running comprehensive JavaScript/TypeScript checks..."
 cd "$JS_DIR" || exit 1
 
 echo "🔍 Running full Biome check..."
-npm run biome:ci
+pnpm run biome:ci
 
 echo "🔍 Running TypeScript type check..."
-npm run typecheck
+pnpm run typecheck
 
 echo "🧪 Running full test suite with coverage..."
-npm run test:ci
+pnpm run test:ci
 
 cd - > /dev/null || exit 1
 

@@ -1,0 +1,30 @@
+{
+  "name": "nogodey-monorepo",
+  "private": true,
+  "description": "Zero-boilerplate localization toolkit - Go CLI + JS/TS ecosystem",
+  "scripts": {
+    "build": "pnpm run -r build",
+    "test": "pnpm run -r test",
+    "test:ci": "pnpm run -r test:ci",
+    "typecheck": "pnpm run -r typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "clean": "pnpm run -r clean",
+    "go:build": "make build-go",
+    "go:test": "make test-go",
+    "go:lint": "make lint-go",
+    "go:format": "make format-go",
+    "all:build": "make build",
+    "all:test": "make test",
+    "all:lint": "make lint",
+    "dev:chat": "cd examples/chat && pnpm start"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
